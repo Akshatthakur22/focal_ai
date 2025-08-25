@@ -1,20 +1,26 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
+# Load environment variables
+load_dotenv()
+
+# Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv("SECRET_KEY", "fallback-secret-key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-# Hosts allowed for this Django app
-ALLOWED_HOSTS = os.getenv(
-    "ALLOWED_HOSTS",
-    "localhost,127.0.0.1,0.0.0.0,focal-ai.onrender.com"
-).split(",")
-
-# CSRF trusted origins (needed for forms / POST requests on Render)
-CSRF_TRUSTED_ORIGINS = [
-    "https://focal-ai.onrender.com"
+# Allow Render + localhost
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "0.0.0.0",
+    os.getenv("RENDER_EXTERNAL_HOSTNAME", ""),  # Render will inject this
+    "focal-ai.onrender.com"
 ]
 
 # Application definition
@@ -25,7 +31,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # your apps here...
+    # your apps
 ]
 
 MIDDLEWARE = [
@@ -38,7 +44,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "focalai_backend.urls"
+ROOT_URLCONF = "focalai.urls"
 
 TEMPLATES = [
     {
@@ -56,13 +62,20 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "focalai_backend.wsgi.application"
+WSGI_APPLICATION = "focalai.wsgi.application"
 
-# Database
+# MongoDB connection
+MONGODB_URI = os.getenv("MONGODB_URI")
+MONGODB_DB_NAME = os.getenv("MONGODB_DB_NAME")
+
+# Example: if using Djongo / PyMongo, configure here
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "djongo",
+        "CLIENT": {
+            "host": MONGODB_URI,
+            "name": MONGODB_DB_NAME,
+        }
     }
 }
 
@@ -74,23 +87,21 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-# Internationalization
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
+# Static files
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Security (for production)
-SECURE_BROWSER_XSS_FILTER = True
-SECURE_CONTENT_TYPE_NOSNIFF = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+# Google OAuth
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+GOOGLE_SECRET = os.getenv("GOOGLE_SECRET")
 
+# Gemini API (optional)
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
