@@ -38,7 +38,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "focal_ai.urls"
+ROOT_URLCONF = "focalai_backend.urls"
 
 TEMPLATES = [
     {
@@ -56,7 +56,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "focal_ai.wsgi.application"
+WSGI_APPLICATION = "focalai_backend.wsgi.application"
 
 # Database
 DATABASES = {
